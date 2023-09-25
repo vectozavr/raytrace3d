@@ -1,0 +1,29 @@
+Assignment 2: Modeling and Viewing Transformations 
+ 
+Mandatory functionality:
+The first task, if you have not done so, display the ray traced output on the screen instead of storing it into the image file.
+ 
+40%
+Then, implement object selection via mouse (and left mouse button click)
+Once the object is selected:
+- translate it in a view-aligned plane (a plane parallel to the viewing plane) up, down, left, and right.
+- rotate it around its own center point in all three world coordinate axes (the center point of the object remains in the same position)
+- scale it (center point of the object remains in the same position)
+- reset transformations
+- hint: the modeling (and also viewing) transformations can be triggered using mouse, keyboard and/or ofxGui
+ 
+ 
+40%
+Implement simple camera controls:
+- pan the camera horizontally and vertically (panning means moving the camera up, down, left, or right while preserving the direction that the camera is pointing to)
+- orbit camera around the scene from equal distance (horizontally and vertically)
+- reset camera to the default position
+- hint: watch this YouTube link [https://www.youtube.com/watch?v=G0xo95O_NMY] to see a visual illustration of various camera movements
+ 
+The mandatory functionality is a guideline for succeeding in obtaining 80% points. You are strongly encouraged to engage yourself with the assignment and implement features from the following optional functionality to get at least 20% points to score the maximum points.
+ 
+Optional functionality:
+- implement visual controls for object modeling transformation 10%
+- perform camera zooming / dolly operation 10%
+- make the scene dynamic where either camera flies a certain path or the scene objects are animated (eg. implement simple physics) 10%
+- modify the position of the light source 10%

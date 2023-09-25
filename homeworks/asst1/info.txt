@@ -1,0 +1,40 @@
+Assignment 1: Simple Ray Tracing
+ 
+Implement simple ray tracing algorithm that computes rays for a parallel and perspective projection for a given fixed viewpoint and viewing plane of a resolution at least 640x480. Viewing plane should be defined by equation z = 0 and its extents are [-2,2] in the x direction and [-1.5,1.5] in the y direction with the viewing direction in the positive z direction. The viewpoint should be at the position (0,0,-1).
+ 
+Define at least three distinct geometric object types of quadric surfaces, through their analytical formula (spheres, planes, ellipsoids, cones, boxes). Implemented types should be instanced in the scene to generate at least four instances. The first two object instances should be at least partially defined within the range x:[-2,2], y:[-1.5,1.5], z:R+ and colored with (1,0,0) and (0,1,0). The third object instance should be in the same range but with z:R- colored with (0,0,1). A gray (0.5,0.5,0.5) plane should be the fourth object in the scene and it should be located in y = -1.4. 
+ 
+Perform a simple intersection test for all pixels iterating over all objects. For each pixel define the closest point of intersection and calculate the surface normal at this location.
+ 
+Then perform the shading with the light positioned at the location (0,5,0) with light color I = I_a = (1,1,1). Calculate a simple Lambertian Shading Model at each intersection with material coefficients ka=0.2, kd=0.8. In case of implementing Phong Shading, use material constants ka=0.2, kd=0.6, ks=0.2, Phong exponent=32.
+ 
+For each shadow ray (ray from surface point to the light source point) you need to calculate whether it intersects another object or not. If it does, the object is in shadow and only the ambient component will be used in the illumination calculation.
+ 
+For each calculated pixel value crop the floating point values to the range of [0..255] for each R,G,B channel and show the image in the application window.
+ 
+Calculate the time it took to perform the raytracing calculation and specify the employed hardware.
+(Tip: If you use C++17 try to make use of CPU parallelism to gain points beyond the minimal requirements. See instructions: https://www.bfilipek.com/2017/08/cpp17-details-parallel.html?m=1)
+ 
+You can use one of the following frameworks to setup a window with canvas where you write the pixel values, but make sure to implement your own tool library (vector, matrix, etc.):
+https://openframeworks.cc/ (use the available sources in CS248-OF-template.zip)
+https://www.libsdl.org/
+https://www.qt.io
+ 
+ 
+Mandatory functionality:
+Viewpoint setting 10%
+Parallel Projection 10%
+Perspective Projection 10%
+Intersection 10%
+Object types: sphere+elipsoid+plane 10%
+Shading: Lambertian 10%
+Shadow 10%
+Performance analysis 10%
+ 
+Optional functionality:
+Object types: cone (with circular base) 10%
+Object types: cylinder (with circular base) 10%
+Object types: cube/box 10%
+Shading: Phong 10%
+Mirror reflection: 10%
+Multiple lights: 10%
