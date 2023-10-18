@@ -9,10 +9,6 @@ add_library(
         Engine.cpp
         World.h
         World.cpp
-        Camera.h
-        Camera.cpp
-        Object.cpp
-        Object.h
         linalg/Vec4D.h
         linalg/Vec4D.cpp
         linalg/Vec3D.cpp
@@ -23,17 +19,27 @@ add_library(
         linalg/Matrix4x4.cpp
         linalg/Color.cpp
         linalg/Color.h
-        geometry/Triangle.h
-        geometry/Triangle.cpp
-        geometry/Plane.h
-        geometry/Plane.cpp
-        geometry/Mesh.h
-        geometry/Mesh.cpp
+        objects/Camera.h
+        objects/Camera.cpp
+        objects/Object.cpp
+        objects/Object.h
+        objects/DirectionalLight.cpp
+        objects/DirectionalLight.h
+        objects/geometry/Triangle.h
+        objects/geometry/Triangle.cpp
+        objects/geometry/Plane.h
+        objects/geometry/Plane.cpp
+        objects/geometry/Sphere.cpp
+        objects/geometry/Sphere.h
+        objects/geometry/Mesh.h
+        objects/geometry/Mesh.cpp
         physics/RigidBody.cpp
         physics/RigidBody.h
         physics/Simplex.h
         physics/HitBox.cpp
         physics/HitBox.h
+        io/Image.cpp
+        io/Image.h
         io/Screen.h
         io/Screen.cpp
         io/Keyboard.cpp
@@ -46,10 +52,12 @@ add_library(
         utils/Time.cpp
         utils/Timer.cpp
         utils/Timer.h
-        utils/LibPNG.cpp
-        utils/LibPNG.h
+        utils/EventHandler.cpp
+        utils/EventHandler.h
         utils/ResourceManager.h
         utils/ResourceManager.cpp
+        utils/ObjectController.h
+        utils/ObjectController.cpp
         animation/Animation.h
         animation/Timeline.cpp
         animation/Timeline.h
@@ -68,10 +76,16 @@ add_library(
         animation/AShowCreation.h
         animation/AShowUncreation.h
         animation/ARotateLeftUpLookAt.h
-        animation/ADecompose.h io/Image.cpp io/Image.h)
+        animation/ADecompose.h)
 
 target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
-add_subdirectory(utils/libpng)
+# LibPNG library
+add_subdirectory(io/libpng)
 target_link_libraries(3DZAVR PUBLIC png)
-target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/utils/libpng)
+target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/io/libpng)
+
+# SDL Library
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/io/SDL EXCLUDE_FROM_ALL)
+target_link_libraries(3DZAVR PUBLIC SDL3::SDL3)
+target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/io/SDL/include)

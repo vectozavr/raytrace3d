@@ -9,14 +9,12 @@
 
 class Color final {
 private:
-    std::array<uint8_t , 4> _arr_point{};
+    std::array<uint8_t, 4> _arr_point{};
 
 public:
-    Color() = default;
-
     Color(const Color &color);
 
-    explicit Color(uint8_t r, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255);
+    explicit Color(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255);
 
     Color &operator=(const Color &color) = default;
 

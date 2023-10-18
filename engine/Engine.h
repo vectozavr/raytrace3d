@@ -5,11 +5,9 @@
 #ifndef ENGINE_ENGINE_H
 #define ENGINE_ENGINE_H
 
-#include <io/Keyboard.h>
 #include <io/Screen.h>
-#include <io/Mouse.h>
 #include <utils/Log.h>
-#include <Camera.h>
+#include "objects/Camera.h"
 #include <World.h>
 
 class Engine {
@@ -24,8 +22,6 @@ private:
 
 protected:
     const std::shared_ptr<Screen> screen = std::make_shared<Screen>();
-    const std::shared_ptr<Keyboard> keyboard = std::make_shared<Keyboard>();
-    const std::shared_ptr<Mouse> mouse = std::make_shared<Mouse>(screen);
 
     const std::shared_ptr<World> world = std::make_shared<World>();
     const std::shared_ptr<Camera> camera = std::make_shared<Camera>();

@@ -10,8 +10,8 @@
 #include <vector>
 #include <memory>
 
-#include <geometry/Triangle.h>
-#include <geometry/Mesh.h>
+#include "objects/geometry/Triangle.h"
+#include "objects/geometry/Mesh.h"
 #include <physics/Simplex.h>
 #include <physics/HitBox.h>
 

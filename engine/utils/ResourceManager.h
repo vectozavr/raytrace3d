@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <geometry/Mesh.h>
+#include "objects/geometry/Mesh.h"
 
 class ResourceManager final {
 private:

@@ -20,7 +20,16 @@ void Screen::open(uint16_t screenWidth, uint16_t screenHeight, const std::string
     _width = screenWidth;
     _height = screenHeight;
 
-    // TODO: implement
+    _isOpen = true;
+
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_CreateWindowAndRenderer(_width, _height, 0, &_window, &_renderer);
+    SDL_SetRenderScale(_renderer, 1, 1);
+
+    SDL_SetRenderDrawColor(_renderer, background.r(), background.g(), background.b(), background.a());
+    SDL_RenderClear(_renderer);
+
+    SDL_HideCursor();
 }
 
 void Screen::display() {
@@ -31,9 +40,15 @@ void Screen::display() {
         // most of the time of video rendering is wasting on saving .png sequence
         // that's why we will save all images in the end
 
+        // TODO: implement saving screen state into _renderSequence
         //_renderSequence.push_back(screenState);
     }
 
+    if(_isOpen) {
+        SDL_RenderPresent(_renderer);
+
+        SDL_WarpMouseInWindow(_window, (float)width()/2, (float)height()/2);
+    }
 }
 
 void Screen::startRender() {
@@ -68,10 +83,19 @@ void Screen::stopRender() {
 }
 
 void Screen::clear() {
-    // TODO: implement
+    SDL_RenderClear(_renderer);
+}
+
+void Screen::drawPixel(const uint16_t x, const uint16_t y, const Color &color) {
+    SDL_SetRenderDrawColor(_renderer, color.r(), color.g(), color.b(), color.a());
+    SDL_RenderPoint(_renderer, x, y);
 }
 
 void Screen::drawTriangle(const Triangle &triangle) {
+    // TODO: implement
+}
+
+void Screen::drawLine(const Vec2D& from, const Vec2D& to) {
     // TODO: implement
 }
 
@@ -79,11 +103,14 @@ void Screen::setTitle(const std::string &title) {
     _title = title;
 }
 
-bool Screen::isOpen() {
-    // TODO: implement
-    return false;
+bool Screen::isOpen() const {
+    return _isOpen;
 }
 
 void Screen::close() {
-    // TODO: implement
+    _isOpen = false;
+
+    SDL_DestroyRenderer(_renderer);
+    SDL_DestroyWindow(_window);
+    SDL_Quit();
 }

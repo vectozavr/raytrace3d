@@ -8,11 +8,13 @@
 
 
 #include <cstdint>
+#include <png.h>
 
 #include <Consts.h>
-#include <utils/LibPNG.h>
 
 class Image {
+public:
+    enum CODE {SUCCESS, FILE_OPEN_ERROR, PNG_STRUCT_ERROR, INFO_STRUCT_ERROR, ERROR};
 private:
     const uint16_t _width;
     const uint16_t _height;
@@ -25,8 +27,9 @@ public:
     [[nodiscard]] uint16_t height() const { return _height; }
 
     void set_pixel(uint16_t x, uint16_t y, const Color& color);
+    [[nodiscard]] Color get_pixel(uint16_t x, uint16_t y) const;
 
-    LibPNG::CODE save2png(const std::string& file_name, uint16_t bit_depth = 8);
+    CODE save2png(const std::string& file_name, uint16_t bit_depth = 8);
 
     ~Image();
 };

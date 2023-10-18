@@ -11,9 +11,9 @@
 #include <linalg/Vec2D.h>
 
 namespace Consts {
-    const uint16_t STANDARD_SCREEN_WIDTH = 1920;
-    const uint16_t STANDARD_SCREEN_HEIGHT = 1080;
-    const Color BACKGROUND_COLOR = Color(255, 255, 255);
+    const uint16_t STANDARD_SCREEN_WIDTH = 640/4;
+    const uint16_t STANDARD_SCREEN_HEIGHT = 480/4;
+    const Color BACKGROUND_COLOR = Color(0, 0, 0);
     const std::string PROJECT_NAME = "engine";
     const bool USE_LOG_FILE = true;
     const bool SHOW_DEBUG_INFO = false;
@@ -22,8 +22,6 @@ namespace Consts {
     const double EPS = 0.000001;
 
     const double EPA_EPS = 0.0001;
-
-    const double RAY_CAST_MAX_DISTANCE = 10000;
 
     const double LARGEST_TIME_STEP = 1.0 / 15.0;
     const double TAP_DELAY = 0.2;

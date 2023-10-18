@@ -4,7 +4,7 @@ project(raytrace3d)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(raytrace3d
-        main.cpp
+        asst2.cpp
         )
 
 
