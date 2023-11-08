@@ -5,8 +5,8 @@
 #include "Triangle.h"
 #include "Consts.h"
 
-Triangle::Triangle(const Vec4D &p1, const Vec4D &p2, const Vec4D &p3, const Color& color) : _color(color),
-                                                                                         _points{p1, p2, p3} {
+Triangle::Triangle(const std::array<Vec4D, 3>& p, const std::array<Vec3D, 3>& uv, const std::array<Color, 3>& color) :
+_points{p}, _textureCoordinates(uv), _colors(color) {
     calculateNormal();
 }
 
@@ -22,12 +22,8 @@ void Triangle::calculateNormal() {
     }
 }
 
-Triangle::Triangle(const Triangle &triangle) : _points{triangle._points[0], triangle._points[1], triangle._points[2]},
-                                               _color(triangle._color), _normal(triangle._normal) {
-}
-
 Triangle Triangle::operator*(const Matrix4x4 &matrix4X4) const {
-    return Triangle(matrix4X4 * _points[0], matrix4X4 * _points[1], matrix4X4 * _points[2], _color);
+    return Triangle{{matrix4X4 * _points[0], matrix4X4 * _points[1], matrix4X4 * _points[2]}, _textureCoordinates, _colors};
 }
 
 Vec3D Triangle::norm() const {
@@ -41,9 +37,7 @@ const Vec4D& Triangle::operator[](int i) const {
 bool Triangle::isPointInside(const Vec3D &point) const {
 
     // TODO: this can be made more efficiently: by finding alpha betta gamma for this triangle and the point.
-
     Vec3D triangleNorm = norm();
-
     double dot1 = (point - Vec3D(_points[0])).cross(Vec3D(_points[1] - _points[0])).dot(triangleNorm);
     double dot2 = (point - Vec3D(_points[1])).cross(Vec3D(_points[2] - _points[1])).dot(triangleNorm);
     double dot3 = (point - Vec3D(_points[2])).cross(Vec3D(_points[0] - _points[2])).dot(triangleNorm);
@@ -52,4 +46,41 @@ bool Triangle::isPointInside(const Vec3D &point) const {
         return true;
     }
     return false;
+}
+
+Vec3D Triangle::abgBarycCoord(const Vec2D &point) const {
+    auto A = _points[0];
+    auto B = _points[1];
+    auto C = _points[2];
+    auto P = point;
+
+    bool swapped = std::abs(C.y() - A.y()) < Consts::EPS;
+    if(swapped) {
+        std::swap(B, C);
+    }
+
+    double betta = (A.x()*(C.y()-A.y()) + (P.y() - A.y())*(C.x()-A.x()) - P.x()*(C.y()-A.y()))/
+            ((B.y()-A.y())*(C.x() - A.x()) - (B.x()-A.x())*(C.y()-A.y()));
+    double gamma = (P.y() - A.y() - betta*(B.y()-A.y()))/(C.y()-A.y());
+    double alpha = 1.0 - betta - gamma;
+
+    if(swapped) {
+        std::swap(betta, gamma);
+    }
+
+    return Vec3D{alpha, betta, gamma};
+}
+
+void Triangle::setColor(const Color &newColor) {
+    _colors[0] = newColor;
+    _colors[1] = newColor;
+    _colors[2] = newColor;
+}
+
+Vec2D Triangle::uvCoord(const Vec2D &point) const {
+    return Vec2D();
+}
+
+Vec2D Triangle::uvCoordDer(const Vec2D &point) const {
+    return Vec2D();
 }

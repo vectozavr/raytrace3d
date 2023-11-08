@@ -26,13 +26,12 @@ void Object::transform(const Matrix4x4 &t) {
 
 void Object::transformRelativePoint(const Vec3D &point, const Matrix4x4 &transform) {
 
-    // translate object in new coordinate system (connected with point)
-    _transformMatrix = Matrix4x4::Translation(position() - point) * _transformMatrix;
+    // translate object in the new coordinate system (connected with point)
+    _transformMatrix = Matrix4x4::Translation( -point) * _transformMatrix;
     // transform object in the new coordinate system
     _transformMatrix = transform * _transformMatrix;
     // translate object back in self connected coordinate system
-    _position = _transformMatrix.w() + point;
-    _transformMatrix = Matrix4x4::Translation(-_transformMatrix.w()) * _transformMatrix;
+    _transformMatrix = Matrix4x4::Translation(point) * _transformMatrix;
 
     for (auto &[attachedName, attachedObject] : _attachedObjects) {
         if (!attachedObject.expired()) {
@@ -43,6 +42,9 @@ void Object::transformRelativePoint(const Vec3D &point, const Matrix4x4 &transfo
 
 void Object::translate(const Vec3D &dv) {
 
+    transform(Matrix4x4::Translation(dv));
+
+    /*
     _position = _position + dv;
 
     for (auto &[attachedName, attachedObject] : _attachedObjects) {
@@ -50,10 +52,16 @@ void Object::translate(const Vec3D &dv) {
             attachedObject.lock()->translate(dv);
         }
     }
+     */
 }
 
 void Object::scale(const Vec3D &s) {
     transform(Matrix4x4::Scale(s));
+}
+
+void Object::scaleInside(const Vec3D &s) {
+    // Scale relative to the internal coordinate system
+    transform(model()*Matrix4x4::Scale(s)*invModel());
 }
 
 void Object::rotate(const Vec3D &r) {
@@ -82,7 +90,7 @@ void Object::rotateLeft(double rl) {
                                _angleLeftUpLookAt.y(),
                                _angleLeftUpLookAt.z()};
 
-    rotate(left(), rl);
+    transformRelativePoint(_transformMatrix.w(), Matrix4x4::Rotation(left(), rl));
 }
 
 void Object::rotateUp(double ru) {
@@ -90,14 +98,15 @@ void Object::rotateUp(double ru) {
                                _angleLeftUpLookAt.y() + ru,
                                _angleLeftUpLookAt.z()};
 
-    rotate(up(), ru);
+    transformRelativePoint(_transformMatrix.w(), Matrix4x4::Rotation(up(), ru));
 }
 
 void Object::rotateLookAt(double rlAt) {
     _angleLeftUpLookAt = Vec3D{_angleLeftUpLookAt.x(),
                                _angleLeftUpLookAt.y(),
                                _angleLeftUpLookAt.z() + rlAt};
-    rotate(lookAt(), rlAt);
+
+    transformRelativePoint(_transformMatrix.w(), Matrix4x4::Rotation(lookAt(), rlAt));
 }
 
 void Object::translateToPoint(const Vec3D &point) {

@@ -27,7 +27,6 @@ protected:
     const std::shared_ptr<Camera> camera = std::make_shared<Camera>();
 
     virtual void start() {};
-
     virtual void update() {};
 
     [[nodiscard]] bool showDebugInfo() const { return _showDebugInfo; }
@@ -49,4 +48,4 @@ public:
 };
 
 
-#endif //INC_3DZAVR_TDZAVR_H
+#endif //ENGINE_ENGINE_H

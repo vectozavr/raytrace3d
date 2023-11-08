@@ -3,9 +3,7 @@ project(raytrace3d)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(raytrace3d
-        asst2.cpp
-        )
+add_executable(raytrace3d asst3.cpp)
 
 
 # include engine into our project

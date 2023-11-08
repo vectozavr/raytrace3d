@@ -9,19 +9,20 @@
 
 class Color final {
 private:
-    std::array<uint8_t, 4> _arr_point{};
+    std::array<float, 4> _c{};
 
 public:
     Color(const Color &color);
 
     explicit Color(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255);
+    explicit Color(const std::array<float, 4>& color);
 
     Color &operator=(const Color &color) = default;
 
-    [[nodiscard]] uint8_t r() const { return _arr_point[0]; }
-    [[nodiscard]] uint8_t g() const { return _arr_point[1]; }
-    [[nodiscard]] uint8_t b() const { return _arr_point[2]; }
-    [[nodiscard]] uint8_t a() const { return _arr_point[3]; }
+    [[nodiscard]] uint8_t r() const;
+    [[nodiscard]] uint8_t g() const;
+    [[nodiscard]] uint8_t b() const;
+    [[nodiscard]] uint8_t a() const;
 
     // Operations with colors
     [[nodiscard]] Color operator+(const Color &color) const;
@@ -30,11 +31,13 @@ public:
     [[nodiscard]] Color operator*(const Color &color) const;
 
     // Operations with numbers
-    [[nodiscard]] Color operator*(double number) const;
-    [[nodiscard]] Color operator/(double number) const;
+    [[nodiscard]] Color operator*(float number) const;
+    [[nodiscard]] Color operator/(float number) const;
 
     // Other useful methods
     [[nodiscard]] Color normalized() const; // Returns normalized vector without changing
+
+    [[nodiscard]] Color static ColorF(float r, float g, float b, float a);
 };
 
 

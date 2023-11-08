@@ -70,21 +70,32 @@ private:
         }
 
         // object scale x:
-        if(Keyboard::isKeyTapped(SDLK_UP)) {
-            selectedObject->scale(Vec3D(1 + Time::deltaTime(), 1, 1));
+        if(Keyboard::isKeyPressed(SDLK_UP)) {
+            selectedObject->scaleInside(Vec3D(1 + Time::deltaTime(), 1, 1));
         }
-        // object scale y:
-        if(Keyboard::isKeyTapped(SDLK_DOWN)) {
-            selectedObject->scale(Vec3D(1, 1 + Time::deltaTime(), 1));
+        // object scale y:d
+        if(Keyboard::isKeyPressed(SDLK_DOWN)) {
+            selectedObject->scaleInside(Vec3D(1, 1 + Time::deltaTime(), 1));
         }
         // object scale z:
-        if(Keyboard::isKeyTapped(SDLK_LEFT)) {
-            selectedObject->scale(Vec3D(1, 1, 1 + Time::deltaTime()));
+        if(Keyboard::isKeyPressed(SDLK_LEFT)) {
+            selectedObject->scaleInside(Vec3D(1, 1, 1 + Time::deltaTime()));
         }
 
         // undo transformations
-        if(Keyboard::isKeyTapped(SDLK_u)) {
+        if(Keyboard::isKeyPressed(SDLK_u)) {
+            std::cout << (selectedObject->model() - selectedObject->invModel()).abs() << std::endl;
             selectedObject->transform(selectedObject->invModel());
+        }
+
+
+
+        // print some debug
+        if(Keyboard::isKeyTapped(SDLK_i)) {
+            std::cout << "-_-_-_-_-_-_-_-_-_-_-_-_" << std::endl;
+            std::cout << "up * left = " << selectedObject->up().dot(selectedObject->left()) << std::endl;
+            std::cout << "up * look = " << selectedObject->up().dot(selectedObject->lookAt()) << std::endl;
+            std::cout << "left * look = " << selectedObject->left().dot(selectedObject->lookAt()) << std::endl;
         }
 
     };
@@ -96,5 +107,5 @@ public:
 
 int main(int argc, char *argv[]) {
     Test test;
-    test.create(300, 200);
+    test.create();
 }

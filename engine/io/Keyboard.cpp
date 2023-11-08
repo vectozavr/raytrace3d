@@ -48,10 +48,10 @@ bool Keyboard::isKeyTapped(SDL_Keycode key) {
 void Keyboard::sendKeyboardEvent(const SDL_Event &event) {
     switch (event.type) {
         // exit if the window is closed
-        case SDL_EVENT_KEY_DOWN:
+        case SDL_KEYDOWN:
             _instance->_keys[event.key.keysym.sym] = true;
             break;
-        case SDL_EVENT_KEY_UP:
+        case SDL_KEYUP:
             _instance->_keys[event.key.keysym.sym] = false;
             break;
     }

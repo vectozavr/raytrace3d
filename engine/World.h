@@ -28,7 +28,10 @@ public:
     std::shared_ptr<Object> add(std::shared_ptr<DirectionalLight> light);
     std::shared_ptr<Object> object(const ObjectNameTag &tag);
     void remove(const ObjectNameTag &tag);
-    std::shared_ptr<Mesh> loadMesh(const ObjectNameTag &tag, const std::string &filename, const Vec3D &scale = Vec3D{1, 1, 1});
+    std::shared_ptr<Mesh> loadMesh(const ObjectNameTag &tag,
+                                   const std::string &mesh_file,
+                                   const std::string &texture_file = "",
+                                   const Vec3D &scale = Vec3D{1, 1, 1});
     void loadMap(const std::string &filename, const Vec3D &scale = Vec3D{1, 1, 1});
 
     // std::string skipTags is a string that consist of all objects we want to skip in ray casting

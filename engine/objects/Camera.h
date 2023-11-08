@@ -12,7 +12,8 @@
 
 class Camera final : public Object {
 private:
-    std::vector<std::shared_ptr<Triangle>> _triangles{};
+    // TODO: delete _triangles from here
+    std::vector<std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Texture>>> _triangles{};
     std::vector<Plane> _clipPlanes{};
     bool _ready = false;
     double _aspect = 0;
@@ -25,13 +26,13 @@ public:
 
     void init(int width, int height, double fov = 90.0, double ZNear = 0.1, double ZFar = 5000.0);
 
-    std::vector<std::shared_ptr<Triangle>> project(std::shared_ptr<Mesh> mesh);
+    std::vector<std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Texture>>> project(std::shared_ptr<Mesh> mesh);
 
     void clear();
 
-    [[nodiscard]] int buffSize() const { return _triangles.size(); }
+    [[nodiscard]] uint16_t buffSize() const { return _triangles.size(); }
 
-    std::vector<std::shared_ptr<Triangle>> sorted();
+    std::vector<std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Texture>>> sorted();
 };
 
 

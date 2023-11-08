@@ -8,7 +8,7 @@
 #include "Camera.h"
 #include "Consts.h"
 
-std::vector<std::shared_ptr<Triangle>> Camera::project(std::shared_ptr<Mesh> mesh) {
+std::vector<std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Texture>>> Camera::project(std::shared_ptr<Mesh> mesh) {
 
     if (!_ready) {
         Log::log("Camera::project(): cannot project _tris without camera initialization ( Camera::init() ) ");
@@ -30,7 +30,7 @@ std::vector<std::shared_ptr<Triangle>> Camera::project(std::shared_ptr<Mesh> mes
 
         Triangle MTriangle = t * M;
 
-        double dot = MTriangle.norm().dot((Vec3D(MTriangle[0]) - position()).normalized());
+        double dot = MTriangle.norm().dot((Vec3D(MTriangle.position()) - position()).normalized());
 
         if (dot > 0) {
             continue;
@@ -42,7 +42,7 @@ std::vector<std::shared_ptr<Triangle>> Camera::project(std::shared_ptr<Mesh> mes
         clippedTriangles.clear();
         tempBuffer.clear();
 
-        // In the beginning we need to to translate triangle from world coordinate to our camera system:
+        // In the beginning we need to translate triangle from world coordinate to our camera system:
         // After that we apply clipping for all planes from _clipPlanes
         clippedTriangles.emplace_back(VMTriangle);
         for (auto &plane : _clipPlanes) {
@@ -57,22 +57,29 @@ std::vector<std::shared_ptr<Triangle>> Camera::project(std::shared_ptr<Mesh> mes
         }
 
         for (auto &clipped : clippedTriangles) {
-            Color color = clipped.color();
-            Color ambientColor = Color(static_cast<uint8_t>(color.r() * (0.3 * std::abs(dot) + 0.7)),
-                                       static_cast<uint8_t>(color.g() * (0.3 * std::abs(dot) + 0.7)),
-                                       static_cast<uint8_t>(color.b() * (0.3 * std::abs(dot) + 0.7)),
-                                       static_cast<uint8_t>(color.a()));
+            auto colors = clipped.colors();
+            auto ambientColors = std::array<Color, 3>{colors[0]*(0.3 * std::abs(dot) + 0.7),
+                                                      colors[1]*(0.3 * std::abs(dot) + 0.7),
+                                                      colors[2]*(0.3 * std::abs(dot) + 0.7)};
 
             // Finally its time to project our clipped colored drawTriangle from 3D -> 2D
             // and transform it's coordinate to screen space (in pixels):
             Triangle clippedProjected = clipped * _SP;
+            auto clippedTexCoord = clippedProjected.textureCoordinates();
 
-            Triangle clippedProjectedNormalized = Triangle(clippedProjected[0] / clippedProjected[0].w(),
-                                                           clippedProjected[1] / clippedProjected[1].w(),
-                                                           clippedProjected[2] / clippedProjected[2].w(),
-                                                           ambientColor);
+            Triangle clippedProjectedNormalized = Triangle({clippedProjected[0] / clippedProjected[0].w(),
+                                                            clippedProjected[1] / clippedProjected[1].w(),
+                                                            clippedProjected[2] / clippedProjected[2].w()},
+                                                           {clippedTexCoord[0] / clippedProjected[0].w(),
+                                                            clippedTexCoord[1] / clippedProjected[1].w(),
+                                                            clippedTexCoord[2] / clippedProjected[2].w()},
+                                                           ambientColors);
 
-            _triangles.emplace_back(std::make_shared<Triangle>(clippedProjectedNormalized));
+            auto textureRef = mesh->getTexture();
+            auto tri = std::make_shared<Triangle>(clippedProjectedNormalized);
+            std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Texture>> pair(tri, textureRef);
+
+            _triangles.emplace_back(pair);
         }
     }
 
@@ -104,13 +111,13 @@ void Camera::init(int width, int height, double fov, double ZNear, double ZFar) 
     Log::log("Camera::init(): camera successfully initialized.");
 }
 
-std::vector<std::shared_ptr<Triangle>> Camera::sorted() {
+std::vector<std::pair<std::shared_ptr<Triangle>, std::shared_ptr<Texture>>> Camera::sorted() {
 
     // Sort _tris from _back to front
     // This is some replacement for Z-buffer
-    std::sort(_triangles.begin(), _triangles.end(), [](std::shared_ptr<Triangle> &t1, std::shared_ptr<Triangle> &t2) {
-        std::vector<double> v_z1({(*t1)[0].z(), (*t1)[1].z(), (*t1)[2].z()});
-        std::vector<double> v_z2({(*t2)[0].z(), (*t2)[1].z(), (*t2)[2].z()});
+    std::sort(_triangles.begin(), _triangles.end(), [](auto &t1, auto &t2) {
+        std::vector<double> v_z1({(*t1.first)[0].z(), (*t1.first)[1].z(), (*t1.first)[2].z()});
+        std::vector<double> v_z2({(*t2.first)[0].z(), (*t2.first)[1].z(), (*t2.first)[2].z()});
 
         std::sort(v_z1.begin(), v_z1.end());
         std::sort(v_z2.begin(), v_z2.end());

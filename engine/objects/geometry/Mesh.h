@@ -8,12 +8,16 @@
 #include <utility>
 #include <vector>
 
-#include "Triangle.h"
-#include "objects/Object.h"
+#include <objects/geometry/Triangle.h>
+#include <objects/Object.h>
+#include <io/Image.h>
+#include <objects/geometry/Texture.h>
 
 class Mesh : public Object {
 private:
     std::vector<Triangle> _tris;
+    std::shared_ptr<Texture> _texture = nullptr;
+
     Color _color = Color(255, 245, 194);
     bool _visible = true;
 
@@ -23,14 +27,17 @@ public:
     explicit Mesh(ObjectNameTag nameTag) : Object(std::move(nameTag)) {};
 
     Mesh &operator=(const Mesh &mesh) = delete;
-
     Mesh(const Mesh &mesh) = default;
 
-    explicit Mesh(ObjectNameTag nameTag, const std::vector<Triangle> &tries);
+    explicit Mesh(ObjectNameTag nameTag, const std::vector<Triangle> &tries, std::shared_ptr<Texture> texture = nullptr);
+    explicit Mesh(ObjectNameTag nameTag,
+                  const std::string &mesh_file,
+                  const std::string &texture_file = "",
+                  const Vec3D &scale = Vec3D{1, 1, 1});
 
-    explicit Mesh(ObjectNameTag nameTag, const std::string &filename, const Vec3D &scale = Vec3D{1, 1, 1});
-
-    void loadObj(const std::string &filename, const Vec3D &scale = Vec3D{1, 1, 1});
+    void loadObj(const std::string &mesh_file,
+                 const std::string &texture_file = "",
+                 const Vec3D &scale = Vec3D{1, 1, 1});
 
     [[nodiscard]] std::vector<Triangle> const &triangles() const { return _tris; }
 
@@ -38,10 +45,11 @@ public:
 
     [[nodiscard]] size_t size() const { return _tris.size() * 3; }
 
-    [[nodiscard]] Color color() const { return _color; }
+    [[nodiscard]] std::shared_ptr<Texture> getTexture() const { return _texture; }
+    void setTexture(std::shared_ptr<Texture> texture) { _texture = texture; }
 
+    [[nodiscard]] Color getColor() const { return _color; }
     void setColor(const Color &c);
-
     void setOpacity(double t);
 
     void setVisible(bool visibility) { _visible = visibility; }
@@ -52,12 +60,18 @@ public:
 
     ~Mesh() override;
 
-    Mesh static Cube(ObjectNameTag tag, double size = 1.0, Color color = Color(0,0,0));
-
-    Mesh static LineTo(ObjectNameTag nameTag, const Vec3D &from, const Vec3D &to, double line_width = 0.1,
+    Mesh static Surface(ObjectNameTag tag, double width, double height, std::shared_ptr<Texture> texture = nullptr);
+    Mesh static Cube(ObjectNameTag tag, double size = 1.0, Color color = Color(255,0,0));
+    Mesh static LineTo(ObjectNameTag nameTag,
+                       const Vec3D &from,
+                       const Vec3D &to,
+                       double line_width = 0.1,
                        const Color &color = Color(150, 150, 150, 100));
-
-    Mesh static ArrowTo(ObjectNameTag nameTag, const Vec3D& from, const Vec3D& to, double line_width = 0.1, Color color = Color(150, 150, 150, 255));
+    Mesh static ArrowTo(ObjectNameTag nameTag,
+                        const Vec3D& from,
+                        const Vec3D& to,
+                        double line_width = 1,
+                        Color color = Color(150, 150, 150, 255));
 };
 
-#endif //INC_3DZAVR_MESH_H
+#endif //ENGINE_MESH_H

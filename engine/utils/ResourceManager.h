@@ -34,7 +34,7 @@ public:
     // Try to load texture from file.
     // If success returns pointer to texture.
     // Otherwise, returns nullptr.
-    static std::vector<std::shared_ptr<Mesh>> loadObjects(const std::string &filename);
+    static std::vector<std::shared_ptr<Mesh>> loadObjects(const std::string &mesh_file, const std::string &texture_file = "");
 };
 
 #endif //PSEUDO3DENGINE_RESOURCEMANAGER_H

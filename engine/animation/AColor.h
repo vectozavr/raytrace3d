@@ -6,7 +6,7 @@
 #define ENGINE_ACOLOR_H
 
 #include <animation/Animation.h>
-#include <geometry/Mesh.h>
+#include <objects/geometry/Mesh.h>
 
 class AColor final : public Animation {
 private:
@@ -26,7 +26,7 @@ private:
 
         if (!_started) {
             _started = true;
-            _startColor = mesh->color();
+            _startColor = mesh->getColor();
         }
 
         Vec4D start(_startColor.r(), _startColor.g(), _startColor.b(), _startColor.a());

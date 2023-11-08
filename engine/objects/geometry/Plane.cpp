@@ -19,8 +19,13 @@ std::vector<Triangle> Plane::clip(const Triangle &tri) const {
 
     std::vector<Triangle> result;
 
+    // points coordinated
     std::vector<Vec3D> insidePoints;
     std::vector<Vec3D> outsidePoints;
+    // texture coordinates
+    std::vector<Vec3D> insideTexUV;
+    std::vector<Vec3D> outsideTexUV;
+    auto textureCoord = tri.textureCoordinates();
 
     double distances[3] = {distance(Vec3D(tri[0])),
                            distance(Vec3D(tri[1])),
@@ -29,8 +34,10 @@ std::vector<Triangle> Plane::clip(const Triangle &tri) const {
     for (int i = 0; i < 3; i++) {
         if (distances[i] >= 0) {
             insidePoints.emplace_back(tri[i]);
+            insideTexUV.emplace_back(textureCoord[i]);
         } else {
             outsidePoints.emplace_back(tri[i]);
+            outsideTexUV.emplace_back(textureCoord[i]);
         }
     }
 
@@ -38,24 +45,36 @@ std::vector<Triangle> Plane::clip(const Triangle &tri) const {
         auto intersect1 = intersect(insidePoints[0], outsidePoints[0]);
         auto intersect2 = intersect(insidePoints[0], outsidePoints[1]);
 
-        result.emplace_back(insidePoints[0].makePoint4D(),
-                            intersect1.pointOfIntersection.makePoint4D(),
-                            intersect2.pointOfIntersection.makePoint4D(),
-                            tri.color());
+        Vec3D textCoord1 = insideTexUV[0] + (outsideTexUV[0] - insideTexUV[0])*intersect1.k;
+        Vec3D textCoord2 = insideTexUV[0] + (outsideTexUV[1] - insideTexUV[0])*intersect2.k;
+
+        std::array<Vec3D, 3> newTexUV{insideTexUV[0], textCoord1, textCoord2};
+
+        result.emplace_back(std::array<Vec4D, 3>{insidePoints[0].makePoint4D(),
+                                                 intersect1.pointOfIntersection.makePoint4D(),
+                                                 intersect2.pointOfIntersection.makePoint4D()},
+                            newTexUV,tri.colors());
     }
 
     if (insidePoints.size() == 2) {
         auto intersect1 = intersect(insidePoints[0], outsidePoints[0]);
         auto intersect2 = intersect(insidePoints[1], outsidePoints[0]);
 
-        result.emplace_back(insidePoints[0].makePoint4D(),
-                            intersect1.pointOfIntersection.makePoint4D(),
-                            insidePoints[1].makePoint4D(),
-                            tri.color());
-        result.emplace_back(intersect1.pointOfIntersection.makePoint4D(),
-                            intersect2.pointOfIntersection.makePoint4D(),
-                            insidePoints[1].makePoint4D(),
-                            tri.color());
+        Vec3D textCoord1 = insideTexUV[0] + (outsideTexUV[0] - insideTexUV[0])*intersect1.k;
+        Vec3D textCoord2 = insideTexUV[1] + (outsideTexUV[0] - insideTexUV[1])*intersect2.k;
+
+        std::array<Vec3D, 3> newTexUV1{insideTexUV[0], textCoord1, insideTexUV[1]};
+        std::array<Vec3D, 3> newTexUV2{textCoord1, textCoord2, insideTexUV[1]};
+
+        result.emplace_back(std::array<Vec4D, 3>{insidePoints[0].makePoint4D(),
+                                                 intersect1.pointOfIntersection.makePoint4D(),
+                                                 insidePoints[1].makePoint4D()},
+                            newTexUV1, tri.colors());
+
+        result.emplace_back(std::array<Vec4D, 3>{intersect1.pointOfIntersection.makePoint4D(),
+                                                 intersect2.pointOfIntersection.makePoint4D(),
+                                                 insidePoints[1].makePoint4D()},
+                            newTexUV2, tri.colors());
     }
 
     if (insidePoints.size() == 3) {
@@ -83,5 +102,6 @@ Object::IntersectionInformation Plane::intersect(const Vec3D &from, const Vec3D 
                                            name(),
                                            std::make_shared<Object>(*this),
                                            (k > 0) && (std::abs(k) < std::numeric_limits<double>::infinity()),
+                                           k,
                                            _color};
 }

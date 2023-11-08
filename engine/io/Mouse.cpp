@@ -52,7 +52,7 @@ void Mouse::sendMouseEvent(const SDL_Event &event) {
     }
 
     // TODO: include event.button.button == SDL_BUTTON_LEFT / SDL_BUTTON_RIGHT cases
-    if (event.type == SDL_EVENT_MOUSE_MOTION) {
+    if (event.type == SDL_MOUSEMOTION) {
         _instance->_motion = _instance->_motion + Vec2D(event.motion.xrel, event.motion.yrel);
     }
 }

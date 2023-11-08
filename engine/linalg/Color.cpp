@@ -10,42 +10,65 @@
 #include <Consts.h>
 
 Color::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-    _arr_point[0] = r;
-    _arr_point[1] = g;
-    _arr_point[2] = b;
-    _arr_point[3] = a;
+    _c[0] = (float)r/255.0f;
+    _c[1] = (float)g/255.0f;
+    _c[2] = (float)b/255.0f;
+    _c[3] = (float)a/255.0f;
+}
+
+Color::Color(const std::array<float, 4> &color) : _c(color) {
+
 }
 
 Color::Color(const Color &color) {
-    _arr_point[0] = color.r();
-    _arr_point[1] = color.g();
-    _arr_point[2] = color.b();
-    _arr_point[3] = color.a();
+    _c[0] = color._c[0];
+    _c[1] = color._c[1];
+    _c[2] = color._c[2];
+    _c[3] = color._c[3];
+}
+
+uint8_t Color::r() const {
+    return (uint8_t)std::min(std::max(_c[0], 0.0f)*255.0f, 255.0f);
+}
+
+uint8_t Color::g() const {
+    return (uint8_t)std::min(std::max(_c[1], 0.0f)*255.0f, 255.0f);
+}
+
+uint8_t Color::b() const {
+    return (uint8_t)std::min(std::max(_c[2], 0.0f)*255.0f, 255.0f);
+}
+
+uint8_t Color::a() const {
+    return (uint8_t)std::min(std::max(_c[3], 0.0f)*255.0f, 255.0f);
 }
 
 
 // Operations with Vec4D
 Color Color::operator+(const Color &color) const {
-    return Color((uint8_t)std::min((double)r() + (double)color.r(), 255.0),
-                 (uint8_t)std::min((double)g() + (double)color.g(), 255.0),
-                 (uint8_t)std::min((double)b() + (double)color.b(), 255.0),
-                 (uint8_t)std::min((double)a() + (double)color.a(), 255.0));
+    return Color({_c[0] + color._c[0],
+                  _c[1] + color._c[1],
+                  _c[2] + color._c[2],
+                  _c[3] + color._c[3]});
 }
 
 Color Color::operator-(const Color &color) const {
-    return Color(r() - color.r(), g() - color.g(), b() - color.b(), a() - color.a());
+    return Color({_c[0] - color._c[0],
+                  _c[1] - color._c[1],
+                  _c[2] - color._c[2],
+                  _c[3] - color._c[3]});
 }
 
-Color Color::operator*(double number) const {
-    return Color((uint8_t)(std::max(std::min((double)r() * number, 255.0), 0.0)),
-                 (uint8_t)(std::max(std::min((double)g() * number, 255.0), 0.0)),
-                 (uint8_t)(std::max(std::min((double)b() * number, 255.0), 0.0)),
-                 a());
+Color Color::operator*(float number) const {
+    return Color({_c[0]*number,
+                  _c[1]*number,
+                  _c[2]*number,
+                  _c[3]});
 }
 
-Color Color::operator/(double number) const {
+Color Color::operator/(float number) const {
     if (std::abs(number) > Consts::EPS) {
-        return *this * (1.0 / number);
+        return *this * (1.0f / number);
     } else {
         throw std::domain_error{"Color::operator/(double number): division by zero"};
     }
@@ -56,7 +79,7 @@ Color Color::normalized() const {
     if (vecAbs > Consts::EPS) {
         return *this / vecAbs;
     } else {
-        return Color(1);
+        return Color{};
     }
 }
 
@@ -65,8 +88,8 @@ bool Color::operator==(const Color &color) const {
 }
 
 Color Color::operator*(const Color &color) const {
-    return Color((uint8_t)((double)(r()*color.r())/255.0),
-                 (uint8_t)((double)(g()*color.g())/255.0),
-                 (uint8_t)((double)(b()*color.b())/255.0),
-                 (uint8_t)((double)(a()*color.a())/255.0));
+    return Color({_c[0]*color._c[0],
+                  _c[1]*color._c[1],
+                  _c[2]*color._c[2],
+                  _c[3]*color._c[3]});
 }

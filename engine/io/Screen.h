@@ -19,33 +19,44 @@
 
 class Screen final {
 private:
-    SDL_Renderer* _renderer;
-    SDL_Window* _window;
+    SDL_Renderer* _renderer = nullptr;
+    SDL_Window* _window = nullptr;
+
+    std::vector<std::vector<float>> _depthBuffer;
+
+    uint16_t _width;
+    uint16_t _height;
 
     int _scene = 0;
-    //std::vector<sf::Texture> _renderSequence;
     bool _renderVideo = false;
 
     std::string _title;
 
     Color _background;
 
-    uint16_t _width;
-    uint16_t _height;
-
     bool _isOpen = false;
 
+    void initDepthBuffer();
+
 public:
-    void open(uint16_t screenWidth = Consts::STANDARD_SCREEN_WIDTH, uint16_t screenHeight = Consts::STANDARD_SCREEN_HEIGHT,
-              const std::string &name = Consts::PROJECT_NAME, const Color& background = Consts::BACKGROUND_COLOR);
+    Screen& operator=(const Screen& scr) = delete;
 
+    void open(uint16_t screenWidth = Consts::STANDARD_SCREEN_WIDTH,
+              uint16_t screenHeight = Consts::STANDARD_SCREEN_HEIGHT,
+              const std::string &title = Consts::PROJECT_NAME,
+              const Color& background = Consts::BACKGROUND_COLOR);
     void display();
-
     void clear();
 
-    void drawTriangle(const Triangle &triangle);
-    void drawLine(const Vec2D& from, const Vec2D& to);
-    void drawPixel(const uint16_t x, const uint16_t y, const Color& color);
+    void drawPixel(uint16_t x, uint16_t y, const Color& color); // Without using depth buffer
+    void drawPixel(uint16_t x, uint16_t y, float z, const Color& color); // With using depth buffer
+    void drawLine(const Vec2D& from, const Vec2D& to, const Color &color, uint16_t thickness = 1);
+    void drawTriangle(const Triangle &triangle, std::shared_ptr<Texture> texture = nullptr);
+    void drawRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const Color &color);
+    void drawStrokeRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+                             const Color &color, uint16_t thickness = 1, const Color &strokeColor = Consts::BLACK);
+
+    void drawImage(uint16_t x, uint16_t y, std::shared_ptr<Image> img);
 
     void setTitle(const std::string &title);
 
@@ -60,6 +71,8 @@ public:
 
     void startRender();
     void stopRender();
+
+    void clearDepthBuffer();
 };
 
 

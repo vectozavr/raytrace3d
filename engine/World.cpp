@@ -32,11 +32,14 @@ void World::remove(const ObjectNameTag &tag) {
     }
 }
 
-std::shared_ptr<Mesh> World::loadMesh(const ObjectNameTag &tag, const std::string &filename, const Vec3D &scale) {
-    std::shared_ptr<Mesh> newMesh = std::make_shared<Mesh>(tag, filename, scale);
+std::shared_ptr<Mesh> World::loadMesh(const ObjectNameTag &tag,
+                                      const std::string &mesh_file,
+                                      const std::string &texture_file,
+                                      const Vec3D &scale) {
+    std::shared_ptr<Mesh> newMesh = std::make_shared<Mesh>(tag, mesh_file, texture_file, scale);
 
     _objects.emplace(tag, newMesh);
-    Log::log("World::loadMesh(): inserted body from " + filename + " with title '" + tag.str() + "' with " +
+    Log::log("World::loadMesh(): inserted body from " + mesh_file + " with title '" + tag.str() + "' with " +
              std::to_string(newMesh->triangles().size()) + " tris.");
     return newMesh;
 }
@@ -57,8 +60,10 @@ Object::IntersectionInformation World::rayCast(const Vec3D &from, const Vec3D &t
     Triangle triangle;
     Color color;
     std::string bodyName;
+    double k = std::numeric_limits<double>::infinity();
     double minDistance = std::numeric_limits<double>::infinity();
     std::shared_ptr<Object> intersectedBody = nullptr;
+    Triangle tri;
 
     for (auto&[name, object]  : _objects) {
 
@@ -83,9 +88,12 @@ Object::IntersectionInformation World::rayCast(const Vec3D &from, const Vec3D &t
             intersectedBody = object;
             norm = intersection.normal;
             color = intersection.color;
-
-            //Triangle triangleRED = Triangle(model * tri[0], model * tri[1], model * tri[2], sf::Color(255, 0, 0));
-            //addObject(std::make_shared<RigidBody>(Mesh(ObjectNameTag("Test" + std::to_string(rand())), std::vector<Triangle>({triangleRED}))));
+            k = intersection.k;
+            tri = intersection.triangle;
+            //Triangle triangleRED = Triangle(tri.points(),
+            //                                {},
+            //                                {Color(255, 0, 0), Color(255, 0, 0), Color(255, 0, 0)});
+            //add(std::make_shared<RigidBody>(Mesh(ObjectNameTag("Test" + std::to_string(rand())), std::vector<Triangle>({triangleRED}))));
         }
 
     }
@@ -96,7 +104,9 @@ Object::IntersectionInformation World::rayCast(const Vec3D &from, const Vec3D &t
                                            ObjectNameTag(bodyName),
                                            intersectedBody,
                                            intersected,
-                                           color};
+                                           k,
+                                           color,
+                                           tri};
 }
 
 void World::loadMap(const std::string &filename, const Vec3D &scale) {
@@ -161,6 +171,7 @@ void World::update() {
 
 std::shared_ptr<Object> World::object(const ObjectNameTag &tag) {
     if (_objects.count(tag) == 0) {
+        Log::log("World::object(): no object with tag '" + tag.str() + "'");
         return nullptr;
     }
     return _objects.find(tag)->second;
@@ -203,10 +214,7 @@ Color World::getIllumination(const Object::IntersectionInformation &point,
         double p = 20;
         Vec3D h = (lightDir+v).normalized();
         double dot = h.dot(norm);
-        if(dot < 0)
-            dot = 0;
-
-        Color spec = Consts::WHITE*lightColor*std::pow(dot, p)*0.5;
+        Color spec = Consts::WHITE*lightColor*std::pow(std::max(0.0, dot), p)*0.5;
 
         // Shadows
         auto rc_shadow = rayCast(point.pointOfIntersection,
@@ -230,10 +238,6 @@ Color World::getIllumination(const Object::IntersectionInformation &point,
         }
         */
     }
-
-    // Fade with distance
-    //return RayCastInfo{d*t, norm, (env + lamb1 + spec1 + lamb2 + spec2)/(1.0 + d.abs()*t/30.0), d.abs()*t};
-    //result /= 1.0 + d.abs()*t/30.0;
 
     return result;
 }

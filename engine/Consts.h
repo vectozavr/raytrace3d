@@ -11,15 +11,16 @@
 #include <linalg/Vec2D.h>
 
 namespace Consts {
-    const uint16_t STANDARD_SCREEN_WIDTH = 640/4;
-    const uint16_t STANDARD_SCREEN_HEIGHT = 480/4;
-    const Color BACKGROUND_COLOR = Color(0, 0, 0);
+    const uint16_t STANDARD_SCREEN_WIDTH = 640/2;
+    const uint16_t STANDARD_SCREEN_HEIGHT = 480/2;
+    const uint16_t SCREEN_SCALE = 4;
+    const Color BACKGROUND_COLOR = Color(255, 255, 255);
     const std::string PROJECT_NAME = "engine";
     const bool USE_LOG_FILE = true;
     const bool SHOW_DEBUG_INFO = false;
 
     const double PI = 3.14159265358979323846264338327950288;
-    const double EPS = 0.000001;
+    const double EPS = 0.00000000001;
 
     const double EPA_EPS = 0.0001;
 

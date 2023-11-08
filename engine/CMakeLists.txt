@@ -76,7 +76,8 @@ add_library(
         animation/AShowCreation.h
         animation/AShowUncreation.h
         animation/ARotateLeftUpLookAt.h
-        animation/ADecompose.h)
+        animation/ADecompose.h
+        objects/geometry/Texture.cpp objects/geometry/Texture.h)
 
 target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
@@ -86,6 +87,7 @@ target_link_libraries(3DZAVR PUBLIC png)
 target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/io/libpng)
 
 # SDL Library
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/io/SDL EXCLUDE_FROM_ALL)
-target_link_libraries(3DZAVR PUBLIC SDL3::SDL3)
-target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/io/SDL/include)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/io/SDL/SDL-2.28.4 EXCLUDE_FROM_ALL)
+target_include_directories(3DZAVR PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/io/SDL/SDL-2.28.4/include)
+find_package(SDL2 REQUIRED)
+target_link_libraries(3DZAVR PUBLIC SDL2::SDL2)

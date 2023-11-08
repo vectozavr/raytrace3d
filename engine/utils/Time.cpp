@@ -113,3 +113,11 @@ void Time::free() {
 
     Log::log("Time::free(): pointer to 'Time' was freed");
 }
+
+std::optional<std::reference_wrapper<const std::map<std::string, Timer>>> Time::timers() {
+    if (_instance == nullptr) {
+        return {};
+    }
+
+    return {_instance->_timers};
+}

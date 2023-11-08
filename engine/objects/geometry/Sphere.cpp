@@ -11,7 +11,7 @@ Sphere::Sphere(double radius, const Vec3D &position, const ObjectNameTag& nameTa
 }
 
 Object::IntersectionInformation Sphere::intersect(const Vec3D &from, const Vec3D &to) const {
-    double t = std::numeric_limits<double>::infinity();
+    double k = std::numeric_limits<double>::infinity();
     Vec3D norm{};
 
     Matrix4x4 toModelMatrix = invModel();
@@ -26,11 +26,11 @@ Object::IntersectionInformation Sphere::intersect(const Vec3D &from, const Vec3D
     double d_ec = d.dot(e_c);
     double D = std::pow(d_ec, 2) - d.sqrAbs()*(e_c.sqrAbs()-_radius*_radius);
     if(D >= 0) {
-        t = (-d_ec - std::sqrt(D))/d.dot(d);
-        norm = (from_M + d*t)/_radius;
+        k = (-d_ec - std::sqrt(D))/d.dot(d);
+        norm = (from_M + d*k)/_radius;
     }
 
-    Vec3D point_M = from_M + d*t;
+    Vec3D point_M = from_M + d*k;
 
     Matrix4x4 fromModelMatrix = model();
 
@@ -43,7 +43,8 @@ Object::IntersectionInformation Sphere::intersect(const Vec3D &from, const Vec3D
                                            distance,
                                            name(),
                                            std::make_shared<Object>(*this),
-                                           (t > 0) && (std::abs(t) < std::numeric_limits<double>::infinity()),
+                                           (k > 0) && (std::abs(k) < std::numeric_limits<double>::infinity()),
+                                           k,
                                            _color};
 
     return res;
